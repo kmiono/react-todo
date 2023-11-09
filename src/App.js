@@ -1,17 +1,35 @@
-import { useState } from "react";
-import "./styles.css";
+import { useState } from 'react';
+import './styles.css';
+import Modal from 'react-modal';
 
 export default function App() {
-  const [todos, setTodos] = useState(["test", "サンプルTODO"]);
-  const [show, setShow] = useState(false);
+  const [todos, setTodos] = useState(['test', 'サンプルTODO']);
+  const [todoText, setTodoText] = useState('');
+  const [editModalIsOpen, setEditModalIsOpen] = useState(false);
 
   const onClickRemove = (index) => {
     const newTodos = [...todos];
     newTodos.splice(index, 1);
     setTodos(newTodos);
   };
-  const openModal = () => {
-    setShow(true);
+
+  // 値取得
+  const onChnageTodoText = (event) => {
+    setTodoText(event.target.value);
+  };
+
+  const onClickAdd = () => {
+    const newTodos = [...todos, todoText];
+    setTodos(newTodos);
+    setTodoText('');
+    closeModal();
+  };
+
+  const openEditModal = () => {
+    setEditModalIsOpen(true);
+  };
+  const closeModal = () => {
+    setEditModalIsOpen(false);
   };
   return (
     <div className="App">
@@ -32,39 +50,33 @@ export default function App() {
               <label>{todo}</label>
               <button
                 className="removeBtn"
-                onClick={() => onClickRemove(index)}
-              >
+                onClick={() => onClickRemove(index)}>
                 X
               </button>
             </div>
           );
         })}
       </ul>
-      <button className="addButton" onClick={openModal}>
+      <button className="addButton" onClick={openEditModal}>
         +
       </button>
-      <Modal show={show} setShow={setShow} />
+      <Modal isOpen={editModalIsOpen}>
+        <h2>新規登録</h2>
+        <input
+          className="modal"
+          type="text"
+          placeholder="タスク名"
+          value={todoText}
+          onChange={onChnageTodoText}
+        />
+        <br />
+        <button className="cancel" onClick={closeModal}>
+          キャンセル
+        </button>
+        <button className="add" onClick={onClickAdd}>
+          保存
+        </button>
+      </Modal>
     </div>
   );
-}
-
-function Modal(props) {
-  const { show, setShow } = props;
-  if (show) {
-    return (
-      <div id="overlay">
-        <div id="content">
-          <h2>新規登録</h2>
-          <input className="modal" type="text" placeholder="タスク名" />
-
-          <button className="cancel" onClick={() => setShow(false)}>
-            キャンセル
-          </button>
-          <button className="add">保存</button>
-        </div>
-      </div>
-    );
-  } else {
-    return null;
-  }
 }
